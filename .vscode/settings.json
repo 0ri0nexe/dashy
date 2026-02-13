@@ -1,6 +1,6 @@
 {
     "rust-analyzer.checkOnSave": true,
-        "rust-analyzer.linkedProjects": [
+    "rust-analyzer.linkedProjects": [
         "server/Cargo.toml"
     ]
 }
