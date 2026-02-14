@@ -1,8 +1,6 @@
-use axum::{Json, Router, routing::get};
+use axum::{Router, routing::get};
 use tower_http::services::ServeDir;
-
-use serde::Serialize;
-use tower_http::cors::{CorsLayer, Any};
+use server::binance::{get_price, Symbols};
 
 #[tokio::main]
 async fn main() {
@@ -23,16 +21,5 @@ fn static_frontend() -> Router {
 
 	// Generate the router to use the root path
 	Router::new().fallback_service(static_frontend_dir)
-		.route("/api/hello", get(hello))
-}
-
-#[derive(Serialize)]
-struct HelloResponse {
-    message: String,
-}
-
-async fn hello() -> Json<HelloResponse> {
-    Json(HelloResponse {
-        message: "Hello from Rust backend 🦀".to_string(),
-    })
+		.route("/api/price/BTC", get(| | get_price(Symbols::BTC)))
 }
