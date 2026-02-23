@@ -1,0 +1,11 @@
+/* Avoid the stupid default margin */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #191e24;
+    
+    font-family: system-ui;
+    color: #ecf9ff;
+    
+}
