@@ -1,11 +1,10 @@
-use axum::{Router, routing::get};
+use axum::Router;
 use tower_http::services::ServeDir;
-use server::binance::{get_price, Symbols};
 
 #[tokio::main]
 async fn main() {
 
-	let app = static_frontend();
+	let app = static_frontend().await;
 	let listener = tokio::net::TcpListener::bind("127.0.0.1:8080").await.unwrap();
 	let socket_addr = listener.local_addr().unwrap();
 
@@ -15,11 +14,11 @@ async fn main() {
 		.unwrap();
 }
 
-fn static_frontend() -> Router {
+async fn static_frontend() -> Router {
 	// Give ServeDir the location to be served
 	let static_frontend_dir = ServeDir::new("../client/build");
 
 	// Generate the router to use the root path
-	Router::new().fallback_service(static_frontend_dir)
-		.route("/api/price/BTC", get(| | get_price(Symbols::BTC)))
+	let router = Router::new().fallback_service(static_frontend_dir);
+	server::setup_endpoints(router).await
 }

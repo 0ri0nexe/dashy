@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use axum::Json;
+use axum::{Json, Router, routing::get};
 use reqwest;
 
 pub enum Symbols {
@@ -40,4 +40,8 @@ pub async fn get_price(symbol:Symbols) -> Json<SymbolResponse> {
         symbol: response.symbol,
         price: parsed_price,
     })
+}
+
+pub fn setup_endpoints(router:Router) -> Router {
+    router.route("/api/price/BTC", get(| | get_price(Symbols::BTC)))
 }
