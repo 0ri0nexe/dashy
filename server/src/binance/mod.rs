@@ -1,3 +1,4 @@
+use log::{info};
 use serde::{Deserialize, Serialize};
 use axum::{Json, Router, routing::get};
 use reqwest;
@@ -43,5 +44,6 @@ pub async fn get_price(symbol:Symbols) -> Json<SymbolResponse> {
 }
 
 pub fn setup_endpoints(router:Router) -> Router {
+    info!("Binance endpoints setup");
     router.route("/api/price/BTC", get(| | get_price(Symbols::BTC)))
 }

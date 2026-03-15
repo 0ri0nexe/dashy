@@ -5,13 +5,9 @@ use axum::{
     routing::{get, post},
     Router,
 };
-
 use serde::{Deserialize, Serialize};
-
 use sqlx::{PgPool, FromRow};
-
 use uuid::Uuid;
-
 use argon2::{
     Argon2,
     password_hash::{
@@ -22,10 +18,9 @@ use argon2::{
         rand_core::OsRng,
     },
 };
-
 use time::{OffsetDateTime, Duration};
-
 use tower_cookies::{Cookies, Cookie};
+use log::{debug, info}; 
 
 #[derive(FromRow)]
 struct User {
@@ -47,6 +42,7 @@ struct MeResponse {
 }
 
 pub async fn init_database() -> PgPool {
+    info!("initialising database");
 
     dotenvy::dotenv().ok();
 
@@ -71,6 +67,7 @@ async fn register(
     Extension(pool): Extension<PgPool>,
     Json(input): Json<AuthInput>,
 ) -> Result<impl IntoResponse, StatusCode> {
+    log::info!("New register post request with json input :\n - email : {:#}\n - password : {:#}", input.email, input.password);
 
     let salt =
         SaltString::generate(&mut OsRng);
@@ -102,7 +99,8 @@ async fn login(
     cookies: Cookies,
     Json(input): Json<AuthInput>,
 ) -> Result<impl IntoResponse, StatusCode> {
-
+    info!("New login request with json input :\n - email : {}\n - password : {}", input.email, input.password);
+    
     let user =
         sqlx::query_as!(
             User,
@@ -153,6 +151,7 @@ async fn login(
 
     cookies.add(cookie);
 
+    debug!("Request ok");
     Ok(StatusCode::OK)
 }
 
@@ -220,12 +219,11 @@ async fn logout(
     StatusCode::OK
 }
 
-
 pub fn setup_endpoints(router:Router, pool: PgPool) -> Router {
-
-    router.route("/auth/register", post(register))
-          .route("/auth/login", post(login))
-          .route("/auth/me", get(me))
-          .route("/auth/logout", post(logout))
+    info!("Database endpoints setup");
+    router.route("/api/auth/register", post(register))
+          .route("/api/auth/login", post(login))
+          .route("/api/auth/me", get(me))
+          .route("/api/auth/logout", post(logout))
           .layer(Extension(pool))
 }

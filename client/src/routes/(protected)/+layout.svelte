@@ -2,7 +2,6 @@
     import Header from "$lib/components/Header.svelte";
     import Sidebar from "$lib/components/Sidebar.svelte";
     import { currentState } from '$lib/shared.svelte.js';
-    import '../app.css';
 
     import { clickOutside } from '$lib/utils.js';
 
